@@ -6,20 +6,63 @@ import {
   InputGroup,
   InputRightElement,
   StackDivider,
+  useToast,
   VStack,
 } from "@chakra-ui/react";
+import axios from "../../utils/axios";
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const navigate = useNavigate();
+  const toast = useToast()
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleClick = () => setShow(!show);
 
-  const submitHandler = () => {
-    const user = { email, password };
-    console.log(user);
+  const submitHandler = async () => {
+    setLoading(true);
+    if (!email || !password) {
+      toast({
+        title: "Please email or password are required.",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const { data } = await axios.post("/users/login", { email, password });
+
+      if (data) {
+        toast({
+          title: "User Login successfully.",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+          position: "bottom",
+        });
+        setLoading(false);
+        navigate("/chats");
+      }
+    } catch (error) {
+      console.log(error.response.data);
+      toast({
+        title: "Error for user registeration !",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      setLoading(false);
+      navigate("/");
+    }
   };
 
   return (
@@ -57,6 +100,7 @@ const Login = () => {
         colorScheme="blue"
         width={"100%"}
         style={{ marginTop: 15 }}
+        isLoading={loading}
         onClick={submitHandler}
       >
         Login
