@@ -3,3 +3,15 @@
   display: flex;
   background-color: skyblue;
 }
+
+::-webkit-scrollbar{
+  width: 0px;
+}
+
+::-webkit-scrollbar-thumb{
+  background-color: rgb(135, 135, 135);
+}
+
+::-webkit-scrollbar-thumb:hover{
+  background: #555;
+}

@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
   const navigate = useNavigate();
-  const toast = useToast()
+  const toast = useToast();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -109,7 +109,7 @@ const Signup = () => {
 
     try {
       const { data } = await axios.post(
-        "/users/register",
+        "/users/",
         { name, email, password, confirmPassword, pic },
         {
           headers: {
@@ -126,6 +126,7 @@ const Signup = () => {
           isClosable: true,
           position: "bottom",
         });
+        localStorage.setItem("userInfo", JSON.stringify(data));
         setLoading(false);
         navigate("/chats");
       }

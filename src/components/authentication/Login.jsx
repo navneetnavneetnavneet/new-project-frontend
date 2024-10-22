@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const navigate = useNavigate();
-  const toast = useToast()
+  const toast = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
@@ -48,6 +48,7 @@ const Login = () => {
           isClosable: true,
           position: "bottom",
         });
+        localStorage.setItem("userInfo", JSON.stringify(data));
         setLoading(false);
         navigate("/chats");
       }
