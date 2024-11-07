@@ -61,6 +61,39 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }
   };
 
+  const fetchMessages = async () => {
+    setLoading(true);
+    if (!selectedChat) {
+      return;
+    }
+
+    try {
+      const { data } = await axios.get(`/messages/${selectedChat._id}`, {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      });
+      console.log(data);
+
+      setMessages(data);
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      console.log(error.response.data);
+      toast({
+        title: "Failed to fetch messages!",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom-center",
+      });
+    }
+  };
+
+  useEffect(() => {
+    fetchMessages();
+  }, [selectedChat]);
+
   const typingHandler = (e) => {
     setNewMessage(e.target.value);
 
