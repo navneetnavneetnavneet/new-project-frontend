@@ -22,7 +22,7 @@ import UserItem from "./UserItem";
 import axios from "../../utils/axios";
 import UserListItem from "./UserListItem";
 
-const UpdateGroupChatModel = ({ fetchAgain, setFetchAgain }) => {
+const UpdateGroupChatModel = ({ fetchAgain, setFetchAgain,fetchMessages }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { user, selectedChat, setSelectedChat } = useContext(ChatContext);
   const toast = useToast();
@@ -119,6 +119,7 @@ const UpdateGroupChatModel = ({ fetchAgain, setFetchAgain }) => {
       user1._id === user._id ? setSelectedChat(null) : setSelectedChat(data);
 
       setFetchAgain(!fetchAgain);
+      fetchMessages();
       setLoading(false);
     } catch (error) {
       console.log(error);

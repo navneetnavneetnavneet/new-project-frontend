@@ -13,6 +13,7 @@ import { ArrowBackIcon } from "@chakra-ui/icons";
 import ProfileModel from "./ProfileModel";
 import UpdateGroupChatModel from "./UpdateGroupChatModel";
 import axios from "../../utils/axios";
+import ScrollableChats from "./ScrollableChats";
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [messages, setMessages] = useState([]);
@@ -73,8 +74,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           Authorization: `Bearer ${user.token}`,
         },
       });
-      console.log(data);
-
       setMessages(data);
       setLoading(false);
     } catch (error) {
@@ -132,6 +131,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                   <UpdateGroupChatModel
                     fetchAgain={fetchAgain}
                     setFetchAgain={setFetchAgain}
+                    fetchMessages={fetchMessages}
                   />
                 }
               </>
@@ -157,7 +157,9 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 margin={"auto"}
               />
             ) : (
-              <div>{/* messages */}</div>
+              <div className="messages">
+                <ScrollableChats messages={messages} />
+              </div>
             )}
             <FormControl onKeyDown={sendMessage} isRequired mt={3}>
               <Input
