@@ -52,7 +52,7 @@ const ScrollableChats = ({ messages }) => {
             {(isSameSender(messages, m, i, user?._id) ||
               isLastMessage(messages, i, user?._id)) && (
               <Tooltip
-                label={m.senderId._id?.name}
+                label={m.senderId?.name}
                 placement="bottom-start"
                 hasArrow
               >

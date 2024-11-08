@@ -14,11 +14,16 @@ import ProfileModel from "./ProfileModel";
 import UpdateGroupChatModel from "./UpdateGroupChatModel";
 import axios from "../../utils/axios";
 import ScrollableChats from "./ScrollableChats";
+import io from "socket.io-client";
+
+const ENDPOINT = "http://localhost:8080";
+var socket, selectedChatCompare;
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [socketConnected, setSocketConnected] = useState(false);
 
   const toast = useToast();
 
@@ -61,6 +66,13 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       }
     }
   };
+
+  useEffect(() => {
+    socket = io(ENDPOINT);
+
+    socket.emit("setup", user);
+    socket.on("connected", () => setSocketConnected(true));
+  }, []);
 
   const fetchMessages = async () => {
     setLoading(true);
