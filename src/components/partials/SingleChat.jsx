@@ -37,6 +37,61 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     return users[0]._id === authUser._id ? users[1] : users[0];
   };
 
+  const fetchMessages = async () => {
+    setLoading(true);
+    if (!selectedChat) {
+      return;
+    }
+
+    try {
+      const { data } = await axios.get(`/messages/${selectedChat._id}`, {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      });
+      setMessages(data);
+      setLoading(false);
+
+      socket.emit("join-chat", selectedChat._id);
+    } catch (error) {
+      setLoading(false);
+      console.log(error.response.data);
+      toast({
+        title: "Failed to fetch messages!",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom-center",
+      });
+    }
+  };
+
+  useEffect(() => {
+    socket = io(ENDPOINT);
+
+    socket.emit("setup", user);
+    socket.on("connected", () => setSocketConnected(true));
+  }, []);
+
+  useEffect(() => {
+    fetchMessages();
+
+    selectedChatCompare = selectedChat;
+  }, [selectedChat]);
+
+  useEffect(() => {
+    socket.on("message-received", (newMessageReceived) => {
+      if (
+        !selectedChatCompare ||
+        selectedChatCompare._id !== newMessageReceived.chat._id
+      ) {
+        // give notification
+      } else {
+        setMessages([...messages, newMessageReceived]);
+      }
+    });
+  });
+
   const sendMessage = async (event) => {
     if (event.key === "Enter" && newMessage) {
       setNewMessage("");
@@ -53,6 +108,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             },
           }
         );
+
+        socket.emit("new-message", data);
         setMessages([...messages, data]);
       } catch (error) {
         console.log(error.response.data);
@@ -66,44 +123,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       }
     }
   };
-
-  useEffect(() => {
-    socket = io(ENDPOINT);
-
-    socket.emit("setup", user);
-    socket.on("connected", () => setSocketConnected(true));
-  }, []);
-
-  const fetchMessages = async () => {
-    setLoading(true);
-    if (!selectedChat) {
-      return;
-    }
-
-    try {
-      const { data } = await axios.get(`/messages/${selectedChat._id}`, {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      });
-      setMessages(data);
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-      console.log(error.response.data);
-      toast({
-        title: "Failed to fetch messages!",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom-center",
-      });
-    }
-  };
-
-  useEffect(() => {
-    fetchMessages();
-  }, [selectedChat]);
 
   const typingHandler = (e) => {
     setNewMessage(e.target.value);
